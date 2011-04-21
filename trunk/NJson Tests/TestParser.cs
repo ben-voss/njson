@@ -31,7 +31,7 @@ using NJson;
 using System.IO;
 using System.Collections.Generic;
 
-namespace NJsonTests
+namespace NJson.Tests
 {
 	[TestFixture()]
 	public class Test

@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{295F5C6F-53D2-4413-992F-371CCFEDF277}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>NJsonTests</RootNamespace>
+    <RootNamespace>NJson.Tests</RootNamespace>
     <AssemblyName>NJson Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestParser.cs" />
+    <Compile Include="JsonWriterTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

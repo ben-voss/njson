@@ -111,7 +111,7 @@ namespace NJson
 					writer.Write("\\b");
 				else if (c == '\f')
 					writer.Write("\\f");
-				else if (c >= 32 && c < 126)
+				else if (c < 32 && c > 126)
 				{
 					writer.Write("\\u");
 					writer.Write(Convert.ToString((int)c, 16).PadLeft(4, '0'));
