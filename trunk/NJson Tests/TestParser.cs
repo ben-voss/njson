@@ -37,6 +37,11 @@ namespace NJson.Tests
 	public class Test
 	{
 		[Test]
+		public void TestArrayOfStringAndNull() {
+			JsonParser.Parse("[\"Hello\", null]");
+		}
+		
+		[Test]
 		public void TestDictionaryEmpty1() {
 			IDictionary<String, Object> result = (IDictionary<String, Object>)JsonParser.Parse("{}");
 			Assert.IsNotNull(result);
