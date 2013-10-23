@@ -169,6 +169,42 @@ namespace NJson.Tests
 			Assert.AreEqual("{\"name\":\"value\"}", builder.ToString());
 		}
 
+        [Test]
+        public void WriteObjectWithOneObjectValue()
+        {
+            StringBuilder builder = new StringBuilder();
+            JsonWriter writer = JsonWriter.Create(builder);
+            writer.WriteStartObject();
+            writer.WriteName("name");
+            writer.WriteStartObject();
+            writer.WriteName("key");
+            writer.WriteValue("value");
+            writer.WriteEnd();
+            writer.WriteEnd();
+            writer.Flush();
+
+            Assert.AreEqual("{\"name\":{\"key\":\"value\"}}", builder.ToString());
+        }
+
+        [Test]
+        public void WriteObjectWithOneObjectValueAndAnotherValue()
+        {
+            StringBuilder builder = new StringBuilder();
+            JsonWriter writer = JsonWriter.Create(builder);
+            writer.WriteStartObject();
+            writer.WriteName("name");
+            writer.WriteStartObject();
+            writer.WriteName("key");
+            writer.WriteValue("value");
+            writer.WriteEnd();
+            writer.WriteName("name");
+            writer.WriteValue("value");
+            writer.WriteEnd();
+            writer.Flush();
+
+            Assert.AreEqual("{\"name\":{\"key\":\"value\"},\"name\":\"value\"}", builder.ToString());
+        }
+
 		[Test]
 		public void WriteObjectWithTwoValues() {
 			StringBuilder builder = new StringBuilder();
@@ -184,8 +220,7 @@ namespace NJson.Tests
 			Assert.AreEqual("{\"name 1\":\"value 1\",\"name 2\":\"value 2\"}", builder.ToString());
 		}
 		
-		
-				[Test]
+		[Test]
 		public void WriteArrayWithOneValue() {
 			StringBuilder builder = new StringBuilder();
 			JsonWriter writer = JsonWriter.Create(builder);
@@ -210,6 +245,46 @@ namespace NJson.Tests
 			Assert.AreEqual("[\"value 1\",\"value 2\"]", builder.ToString());
 		}
 
+        [Test]
+        public void WriteArrayWithTwoObjects()
+        {
+            StringBuilder builder = new StringBuilder();
+            JsonWriter writer = JsonWriter.Create(builder);
+            writer.WriteStartArray();
+            writer.WriteStartObject();
+            writer.WriteName("key").WriteValue("1");
+            writer.WriteName("value").WriteValue("2");
+            writer.WriteEnd();
+            writer.WriteStartObject();
+            writer.WriteName("key").WriteValue("3");
+            writer.WriteName("value").WriteValue("4");
+            writer.WriteEnd();
+            writer.WriteEnd();
+            writer.Flush();
+
+            Assert.AreEqual("[{\"key\":\"1\",\"value\":\"2\"},{\"key\":\"3\",\"value\":\"4\"}]", builder.ToString());
+        }
+
+        [Test]
+        public void WriteArrayWithTwoArrays()
+        {
+            StringBuilder builder = new StringBuilder();
+            JsonWriter writer = JsonWriter.Create(builder);
+            writer.WriteStartArray();
+            writer.WriteStartArray();
+            writer.WriteValue("1");
+            writer.WriteValue("2");
+            writer.WriteEnd();
+            writer.WriteStartArray();
+            writer.WriteValue("3");
+            writer.WriteValue("4");
+            writer.WriteEnd();
+            writer.WriteEnd();
+            writer.Flush();
+
+            Assert.AreEqual("[[\"1\",\"2\"],[\"3\",\"4\"]]", builder.ToString());
+        }
+
 		[Test]
 		public void WriteNull() {
 			StringBuilder builder = new StringBuilder();
@@ -227,7 +302,7 @@ namespace NJson.Tests
 			StringBuilder builder = new StringBuilder();
 			JsonWriter writer = JsonWriter.Create(builder);
 			writer.WriteStartArray();
-			writer.WriteValue(null);
+			writer.WriteValue((string)null);
 			writer.WriteEnd();
 			writer.Flush();
 			
