@@ -313,7 +313,7 @@ namespace NJson
 						if (!UInt32.TryParse(new String(chars), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out unicode))
 							throw new Exception();
 						
-						builder.Append(Char.ConvertFromUtf32((int)unicode));
+						builder.Append(((char)unicode));
 					}
 				} else
 					builder.Append(_c);
