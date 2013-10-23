@@ -1,6 +1,6 @@
 //
 // NJson - JSON Library for .Net.
-//    Copyright (C) 2011 Ben Voß
+//    Copyright (C) 2011-2013 Ben Voß
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ namespace NJson
 		}
 			                            
 		public static JsonWriter Create(StringBuilder builder) {
-			return Create(new System.IO.StringWriter(builder));
+			return Create(new StringWriter(builder));
 		}
 			
 		public static JsonWriter Create(TextWriter writer) {
@@ -90,35 +90,46 @@ namespace NJson
 		/// <summary>
 		/// Writes the start of an object
 		/// </summary>
-		public void WriteStartObject() {
-			if (_scopeStack.Count > 0) {
-				Scope scope = _scopeStack.Peek();
-				if ((scope.ScopeType == ScopeType.Object) && (!scope.NameWritten))
-					throw new Exception("Must write a name before creating a nested object.");
-			}
-			
-			_scopeStack.Push(new Scope(ScopeType.Object));
+		public JsonWriter WriteStartObject() {
+            if (_scopeStack.Count > 0)
+            {
+                Scope scope = _scopeStack.Peek();
+                if ((scope.ScopeType == ScopeType.Object) && (!scope.NameWritten))
+                    throw new Exception("Must write a name before creating a nested object.");
+
+                // When writing an array of objects we separate them with commas
+                WriteComma();
+            }
+
+		    _scopeStack.Push(new Scope(ScopeType.Object));
 			_writer.Write('{');
+
+		    return this;
 		}
 		
 		/// <summary>
 		/// Writes the start of an array.
 		/// </summary>
-		public void WriteStartArray() {
+        public JsonWriter WriteStartArray() {
 			if (_scopeStack.Count > 0) {
 				Scope scope = _scopeStack.Peek();
 				if ((scope.ScopeType == ScopeType.Object) && (!scope.NameWritten))
 					throw new Exception("Must write a name before creating a nested array.");
-			}
+
+                // When writing an array of arrays we separate them with commas
+                WriteComma();
+            }
 
 			_scopeStack.Push(new Scope(ScopeType.Array));
 			_writer.Write('[');
-		}
+
+            return this;
+        }
 		
 		/// <summary>
 		/// Closes an open object or array.
 		/// </summary>
-		public void WriteEnd() {
+        public JsonWriter WriteEnd() {
 			if (_scopeStack.Count == 0)
 				throw new Exception();
 			
@@ -127,7 +138,9 @@ namespace NJson
 				_writer.Write('}');
 			else
 				_writer.Write(']');
-		}
+
+		    return this;
+        }
 
 		/// <summary>
 		/// Closes open objects and arrays
@@ -143,7 +156,7 @@ namespace NJson
 		/// <param name="name">
 		/// A <see cref="String"/> string containing the name to write.
 		/// </param>
-		public void WriteName(String name) {
+		public JsonWriter WriteName(String name) {
 			if (_scopeStack.Count == 0)
 				throw new Exception("Names can only be written in object containers.");
 			
@@ -154,8 +167,8 @@ namespace NJson
 			
 			if (scope.NameWritten)
 				throw new Exception("Name cannot be written more than once without a value written between.");
-			else
-				scope.NameWritten = true;
+			
+            scope.NameWritten = true;
 			
 			if (scope.FirstValueWritten)
 				_writer.Write(',');
@@ -163,15 +176,19 @@ namespace NJson
 			WriteEscapedString(name);
 			
 			_writer.Write(':');
+
+		    return this;
 		}
 		
 		/// <summary>
 		/// Writes a null value
 		/// </summary>
-		public void WriteNullValue() {
+		public JsonWriter WriteNullValue() {
 			WriteComma();
 			
 			_writer.Write("null");
+
+		    return this;
 		}
 
 		/// <summary>
@@ -183,7 +200,7 @@ namespace NJson
 		/// <param name="value">
 		/// The <see cref="String"/> to write.
 		/// </param>
-		public void WriteValue(String value) {
+		public JsonWriter WriteValue(String value) {
 			
 			WriteComma();
 			
@@ -191,6 +208,8 @@ namespace NJson
 				_writer.Write("null");
 			else
 				WriteEscapedString(value);
+
+		    return this;
 		}
 		
 		/// <summary>
@@ -199,38 +218,71 @@ namespace NJson
 		/// <param name="value">
 		/// The <see cref="Decimal"/> value to write.
 		/// </param>
-		public void WriteValue(Decimal value) {
+		public JsonWriter WriteValue(Decimal value) {
 			WriteComma();
 
 			_writer.Write(value.ToString());
+
+		    return this;
 		}
-		
+
+        /// <summary>
+        /// Writes a nullable decimal value.
+        /// </summary>
+        /// <param name="value">
+        /// The <see cref="Decimal"/> value to write.
+        /// </param>
+        public JsonWriter WriteValue(Decimal? value)
+        {
+            WriteComma();
+
+            _writer.Write(value == null ? "null" : value.ToString());
+
+            return this;
+        }
+
 		/// <summary>
 		/// Writes a boolean value
 		/// </summary>
 		/// <param name="value">
 		/// The <see cref="System.Boolean"/> value to write.
 		/// </param>
-		public void WriteValue(bool value) {
+		public JsonWriter WriteValue(bool value) {
 			WriteComma();
-			
-			if (value)
-				_writer.Write("true");
-			else
-				_writer.Write("false");
+
+		    _writer.Write(value ? "true" : "false");
+
+		    return this;
 		}
-		
+
+        /// <summary>
+        /// Writes a nullable boolean value
+        /// </summary>
+        /// <param name="value">
+        /// The <see cref="System.Boolean"/> value to write.
+        /// </param>
+        public JsonWriter WriteValue(bool? value)
+        {
+            WriteComma();
+
+            _writer.Write(value == null ? null : (value.Value ? "true" : "false"));
+
+            return this;
+        }
+
 		/// <summary>
 		/// Writes the given white space.
 		/// </summary>
 		/// <param name="ws">
 		/// A <see cref="String"/> containing the white space characters.
 		/// </param>		
-		public void WriteWhitespace(String ws) {
+		public JsonWriter WriteWhitespace(String ws) {
 			if (_scopeStack.Count == 0)
 				throw new Exception("Whitespace can only be written in containers.");
 
 			_writer.Write(ws);
+
+		    return this;
 		}
 		
 		private void WriteEscapedString(String value) {
@@ -271,14 +323,13 @@ namespace NJson
 			
 			if ((scope.ScopeType == ScopeType.Object) && (!scope.NameWritten))
 				throw new Exception();
-			else
-				scope.NameWritten = false;
+			
+            scope.NameWritten = false;
 			
 			if ((scope.ScopeType == ScopeType.Array) && (scope.FirstValueWritten))
 				_writer.Write(',');
 			else
 				scope.FirstValueWritten = true;
-			
 		}
 	}
 }

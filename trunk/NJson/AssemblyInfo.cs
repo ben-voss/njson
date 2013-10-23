@@ -1,6 +1,6 @@
 //
 // NJson - JSON Library for .Net.
-//    Copyright (C) 2011 Ben Voß
+//    Copyright (C) 2011-2013 Ben Voß
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ben Voß")]
 [assembly: AssemblyProduct("NJson")]
-[assembly: AssemblyCopyright("2011 Ben Voß")]
+[assembly: AssemblyCopyright("2011-2013 Ben Voß")]
 [assembly: AssemblyTrademark("NJson")]
 [assembly: AssemblyCulture("")]
 

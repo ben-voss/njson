@@ -1,6 +1,6 @@
 //
 // NJson - JSON Library for .Net.
-//    Copyright (C) 2011 Ben Voß
+//    Copyright (C) 2011-2013 Ben Voß
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,12 +52,11 @@ namespace NJson
 		
 		private readonly Stack<Scope> _scopeStack = new Stack<Scope>();
 		
-		private TextReader _reader;
+		private readonly TextReader _reader;
 		
 		private char _c;
 		
-		private JsonReader (TextReader reader)
-		{
+		private JsonReader (TextReader reader) {
 			_reader = reader;
 			_c = (char)reader.Read();
 			ParseWhiteSpace();
@@ -164,7 +163,7 @@ namespace NJson
 			
 			Scope scope = _scopeStack.Peek();
 			
-			if (scope.ScopeType != JsonReader.ScopeType.Object)
+			if (scope.ScopeType != ScopeType.Object)
 				throw new Exception("Cannot read a name when the scope is not an object.");
 			
 			if (scope.NameRead)
@@ -242,8 +241,7 @@ namespace NJson
 		}
 		
 		private bool ParseBool() {
-			if (_c == 't')
-			{
+			if (_c == 't') {
 				ConsumeExpected('r');
 				ConsumeExpected('u');
 				ConsumeExpected('e');
@@ -252,17 +250,17 @@ namespace NJson
 				ParseWhiteSpace();
 
 				return true;
-			} else {
-				ConsumeExpected('a');
-				ConsumeExpected('l');
-				ConsumeExpected('s');
-				ConsumeExpected('e');
-				_c = (char)_reader.Read();
-			
-				ParseWhiteSpace();
-				
-				return false;
 			}
+
+			ConsumeExpected('a');
+			ConsumeExpected('l');
+			ConsumeExpected('s');
+			ConsumeExpected('e');
+			_c = (char)_reader.Read();
+			
+			ParseWhiteSpace();
+				
+			return false;
 		}
 		
 		private void ConsumeExpected(Char expected) {
@@ -275,7 +273,7 @@ namespace NJson
         // The function enters with c equal to the string open quote '"'
         // and the reader positioned at the next character.
 		// The function returns the parsed string and sets c equal to the first
-		// character after the closing quote and the reader posittioned at the
+		// character after the closing quote and the reader positioned at the
 		// next character
 		private string ParseString() {						
 			StringBuilder builder = new StringBuilder();
